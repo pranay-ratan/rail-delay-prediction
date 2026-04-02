@@ -28,7 +28,7 @@ function Sidebar({ active, onNavigate, sidebarOpen, onClose }) {
           }}>RR</div>
           <div>
             <h1>Rail Risk Intelligence</h1>
-            <span>CPKC &middot; Canadian Pacific Kansas City</span>
+            <span>Rail Incident Analytics Platform</span>
           </div>
         </div>
       </div>

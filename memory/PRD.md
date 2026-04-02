@@ -1,7 +1,7 @@
-# CPKC Rail Risk Intelligence Dashboard — PRD
+# Rail Risk Intelligence Dashboard — PRD
 
 ## Original Problem Statement
-Build a production-grade interactive web dashboard for CPKC (Canadian Pacific Kansas City) that visualizes and predicts rail incident severity using machine learning. Replace the existing Streamlit app with an enterprise-grade React+FastAPI dashboard with dark theme, interactive Plotly charts, and ML-powered predictions.
+Build a production-grade interactive web dashboard that visualizes and predicts rail incident severity using machine learning. Replace the existing Streamlit app with an enterprise-grade React+FastAPI dashboard with dark theme, interactive Plotly charts, and ML-powered predictions.
 
 ## Architecture
 - **Backend**: FastAPI (Python) on port 8001 — serves incident data, model metrics, and ML predictions

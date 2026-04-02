@@ -1,5 +1,5 @@
 """
-CPKC Rail Risk Intelligence — FastAPI Backend
+Rail Risk Intelligence — FastAPI Backend
 Serves incident data, model metrics, and ML predictions.
 """
 
@@ -24,7 +24,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="CPKC Rail Risk Intelligence API")
+app = FastAPI(title="Rail Risk Intelligence API")
 
 app.add_middleware(
     CORSMiddleware,

@@ -5,7 +5,7 @@ const DARK_LAYOUT = {
   paper_bgcolor: '#161B22',
   plot_bgcolor: '#0D1117',
   font: { family: 'Inter, sans-serif', color: '#8B949E', size: 12 },
-  margin: { l: 50, r: 20, t: 40, b: 50 },
+  margin: { l: 140, r: 20, t: 40, b: 50 },
   xaxis: { gridcolor: '#30363D', zerolinecolor: '#30363D' },
   yaxis: { gridcolor: '#30363D', zerolinecolor: '#30363D' },
   hoverlabel: { bgcolor: '#161B22', bordercolor: '#30363D', font: { color: '#E6EDF3', size: 12 } },
@@ -91,9 +91,10 @@ export default function DeepDiveExplorer({ api }) {
                   }]}
                   layout={{
                     ...DARK_LAYOUT,
-                    height: 500,
-                    xaxis: { ...DARK_LAYOUT.xaxis, tickangle: -35, tickfont: { size: 10 } },
-                    yaxis: { ...DARK_LAYOUT.yaxis, tickfont: { size: 11 } },
+                    height: 520,
+                    margin: { l: 180, r: 60, t: 20, b: 120 },
+                    xaxis: { ...DARK_LAYOUT.xaxis, tickangle: -35, tickfont: { size: 10, color: '#8B949E' } },
+                    yaxis: { ...DARK_LAYOUT.yaxis, tickfont: { size: 11, color: '#8B949E' } },
                   }}
                   config={{ displayModeBar: false, responsive: true }}
                   style={{ width: '100%' }}
@@ -210,9 +211,10 @@ export default function DeepDiveExplorer({ api }) {
                   }]}
                   layout={{
                     ...DARK_LAYOUT,
-                    height: 600,
-                    xaxis: { ...DARK_LAYOUT.xaxis, tickangle: -45, tickfont: { size: 9 } },
-                    yaxis: { ...DARK_LAYOUT.yaxis, tickfont: { size: 9 }, autorange: 'reversed' },
+                    height: 650,
+                    margin: { l: 160, r: 60, t: 20, b: 140 },
+                    xaxis: { ...DARK_LAYOUT.xaxis, tickangle: -45, tickfont: { size: 9, color: '#8B949E' } },
+                    yaxis: { ...DARK_LAYOUT.yaxis, tickfont: { size: 9, color: '#8B949E' }, autorange: 'reversed' },
                   }}
                   config={{ displayModeBar: false, responsive: true }}
                   style={{ width: '100%' }}
