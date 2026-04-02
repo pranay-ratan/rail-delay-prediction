@@ -1,0 +1,98 @@
+{
+  "theme": "dark",
+  "archetype": "Archetype 4 (Swiss & High-Contrast) + Datadog/Palantir Dashboard Polish",
+  "emotional_tone": "Authoritative, analytical, highly polished, professional enterprise.",
+  "colors": {
+    "background": "#0D1117",
+    "surface": "#161B22",
+    "surface_hover": "#1F2937",
+    "border": "#30363D",
+    "border_active": "rgba(255, 255, 255, 0.2)",
+    "brand_primary": "#C8102E",
+    "brand_secondary": "#1A3A5C",
+    "brand_success": "#2E8B57",
+    "text_primary": "#E6EDF3",
+    "text_secondary": "#8B949E",
+    "text_muted": "#6E7681",
+    "critical_alert": "#FF3B30",
+    "warning": "#D29922",
+    "chart_palette": [
+      "#C8102E",
+      "#1A3A5C",
+      "#2E8B57",
+      "#D29922",
+      "#8957E5",
+      "#2E90FA"
+    ]
+  },
+  "typography": {
+    "primary_font": "Inter",
+    "data_font": "JetBrains Mono, monospace",
+    "heading_style": "tracking-tight font-semibold text-primary-text",
+    "body_style": "leading-relaxed text-secondary-text",
+    "hierarchy": {
+      "h1": "text-3xl sm:text-4xl font-bold tracking-tighter",
+      "h2": "text-xl sm:text-2xl font-semibold tracking-tight",
+      "h3": "text-lg font-medium",
+      "data_large": "text-4xl sm:text-5xl font-mono font-medium tracking-tight",
+      "body": "text-sm sm:text-base",
+      "labels": "text-xs font-semibold uppercase tracking-[0.1em] text-muted-text"
+    }
+  },
+  "layout": {
+    "strategy": "The 'Control Room' Grid",
+    "base_grid": "grid-cols-1 md:grid-cols-3 xl:grid-cols-4",
+    "gap": "gap-4 md:gap-6",
+    "container_padding": "p-4 md:p-8",
+    "card_padding": "p-5 md:p-6"
+  },
+  "surface_strategy": {
+    "cards": "bg-[#161B22] border border-[#30363D] rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.5)] overflow-hidden",
+    "sidebar": "bg-[#0D1117] border-r border-[#30363D]",
+    "header": "bg-[#0D1117]/80 backdrop-blur-xl border-b border-[#30363D] sticky top-0 z-50",
+    "interactive": "hover:border-white/20 transition-all duration-200 ease-in-out"
+  },
+  "motion": {
+    "tabs": "Framer Motion layoutId for active tab indicator. Smooth fade in/out for tab content.",
+    "numbers": "react-countup or framer-motion for animated counter stats on load and update.",
+    "hover": "Subtle -translate-y-[2px] on interactive cards. Border color transition.",
+    "charts": "Recharts native animations. Staggered entrance for list items/leaderboards."
+  },
+  "components_instructions": {
+    "sidebar": "Left-nav panel. Fixed on desktop, collapsible on mobile. Must include Logo (icon + CPKC text), main navigation links, and a 'Model Status: Active' indicator at the bottom with a pulsing green dot.",
+    "executive_dashboard": "Hero stats row (animated counters for Total Incidents, Risk Score, etc.). Main visual: Interactive Canada risk heatmap (use Recharts or a custom SVG map if available, otherwise a stylized geographic chart). Quick Route Risk widget on the right.",
+    "deep_dive_explorer": "Use Shadcn Tabs for Geographic, Temporal, Correlation, Typology views. Ensure tabs have clean, underline-style or segmented-control style.",
+    "model_command_center": "Dense, technical view. Include a leaderboard table (Shadcn Table) showing model versions/performance. Include ROC curves and Feature Importance bar charts (Recharts).",
+    "live_risk_assessor": "Input form (Shadcn Form/Inputs) with realistic parameters. Submit button triggers an analysis that displays a Risk Gauge chart (Recharts RadialBar) and Feature Contribution Waterfall chart.",
+    "charts": "Insight-first design. Every chart must have a small title and a muted subtitle/insight text explaining the takeaway. Custom Recharts tooltip with dark background (#161B22) and border (#30363D)."
+  },
+  "media": {
+    "images": {
+      "logo": {
+        "url": "https://images.pexels.com/photos/9011396/pexels-photo-9011396.jpeg",
+        "category": "logo",
+        "description": "Close-up of a vintage train metal surface. Use this as a small round avatar (w-8 h-8 rounded-full border border-[#30363D]) next to the text 'CPKC' for the brand logo in the sidebar."
+      },
+      "hero_background": {
+        "url": "https://images.unsplash.com/photo-1763895470866-25fba9d7c5cc",
+        "category": "background",
+        "description": "Train station at night with illuminated tracks. Can be used as a heavily faded (opacity-10) background image for the Executive Dashboard header or login screen."
+      },
+      "empty_state": {
+        "url": "https://images.unsplash.com/photo-1759138218559-057203cd8037",
+        "category": "illustration",
+        "description": "Steam train passes sheep. Use for empty states (e.g., 'No incidents found') by applying a grayscale filter, 50% opacity, and rounded corners."
+      }
+    }
+  },
+  "accessibility": {
+    "contrast": "Ensure all text against the #0D1117 background meets minimum 4.5:1 ratio. Use the designated text_primary and text_secondary colors.",
+    "focus": "All interactive elements must have focus:outline-none focus:ring-2 focus:ring-[#1A3A5C] focus:border-[#C8102E].",
+    "testing": "All interactive and key informational elements MUST include a data-testid attribute (e.g., data-testid='left-nav-dashboard', data-testid='risk-gauge-chart')."
+  },
+  "anti_patterns": {
+    "forbidden_colors": ["#9D4CDD", "#1B93A4", "teal green", "teal blue"],
+    "forbidden_fonts": ["Space Grotesk"],
+    "forbidden_elements": ["emojis", "generic sans for headers if it feels like a template (use strict tight tracking)"]
+  }
+}
