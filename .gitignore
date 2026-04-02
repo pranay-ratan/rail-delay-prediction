@@ -42,3 +42,7 @@ logs/
 
 # Streamlit cache
 .streamlit/secrets.toml
+-e 
+# Environment files
+*.env
+*.env.*
