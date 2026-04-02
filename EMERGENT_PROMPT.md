@@ -14,6 +14,8 @@ A Streamlit-based app with 4 pages:
 
 Tech stack: Python 3.13, pandas, scikit-learn, XGBoost, LightGBM, SHAP, Streamlit, Plotly
 
+Repository: https://github.com/pranay-ratan/rail-delay-prediction
+
 ---
 
 ## Core Problems to Solve
@@ -43,6 +45,11 @@ Think: Datadog / Palantir / Grafana level of polish. Clean dark theme, responsiv
 - **Cards-based layout** — Information organized in cards with subtle shadows, rounded corners
 - **Animated transitions** — Smooth page transitions, loading spinners, chart animations
 
+### Tone & Professionalism
+- **NO random emojis anywhere** — This is a professional enterprise tool, not a casual internal app. Absolutely avoid decorative emojis like 🚂📊🤖🎯🔥💡🔍📋✅❌ as bullet points, section headers, or decoration. Use only purposeful icons if they serve a clear functional navigation purpose.
+- **Professional language** — All labels, tooltips, and descriptions should read like they belong in a corporate risk management platform. Use precise terminology: "Incident Severity Score" not "How risky is this?"
+- **No playful copy** — Avoid "Let's go!", "Awesome!", "Here you go!" Language should be crisp, neutral, and action-oriented.
+
 ### Layout Structure
 Replace Streamlit's default sidebar with a professional **left-nav panel** with:
 - Logo + "Rail Risk Intelligence" at top
@@ -65,7 +72,7 @@ Replace Streamlit's default sidebar with a professional **left-nav panel** with:
 ### Page 2: Deep Dive Explorer (Replaces EDA)
 **What it should be:** An interactive data exploration tool
 - **Tabbed interface:**
-  - **Tab 1: Geographic View** — Interactive Canada map with chloropleth. Click a province → show incident breakdown, top incident types, rolling trend
+  - **Tab 1: Geographic View** — Interactive Canada map with choropleth. Click a province → show incident breakdown, top incident types, rolling trend
   - **Tab 2: Temporal View** — Time series with filters (year range, month, season). Seasonal decomposition chart with observed/trend/residual
   - **Tab 3: Correlation Explorer** — Interactive feature correlation matrix. Click a cell → show scatter plot of those two features
   - **Tab 4: Incident Typology** — Sankey diagram or sunburst showing incident type → severity → outcome relationships
@@ -108,6 +115,38 @@ Replace Streamlit's default sidebar with a professional **left-nav panel** with:
 
 ---
 
+## Graphics & Visualization Standards
+
+### Chart Quality
+- **Custom styling only**: No default Plotly or matplotlib styles. Apply the dark theme consistently across all charts.
+- **Clear visual hierarchy**: Titles > axis labels > data > annotations. Use font weight and size to guide the eye.
+- **Insight-first design**: Every chart should answer a question. Put the insight (e.g., "Derailments are 40% more likely in winter") as a text callout ABOVE the chart, not below it.
+- **Avoid chart junk**: No 3D effects, no decorative elements, no redundant legends. Every pixel should serve a purpose.
+
+### Chart Implementation Notes
+- **Risk map**: Use Plotly `choropleth` with a continuous color scale from dark green (low) to dark red (high). Add dropdown for incident type filtering.
+- **Trend lines**: Plotly `line` with shaded confidence band. Annotate significant events or seasonal peaks.
+- **Feature importance**: Horizontal bars sorted descending, with each bar colored by whether increasing that feature increases or decreases risk.
+- **Model comparison**: Overlaid ROC curves with AUC in legend. No area fill — keep it clean.
+- **Live predictor gauge**: Build with Plotly `indicator` chart but style it to match the dark theme. Segment into LOW/MEDIUM/HIGH zones with distinct colors.
+- **Waterfall chart**: For the risk assessor, show baseline probability → feature contributions → final prediction. Use green bars for risk-decreasing factors, red for risk-increasing.
+
+### Insight Presentation Standards
+Every page must have an **insight summary block** that distills what the user is looking at:
+- Use compact stat callouts: `22% of all incidents | Ontario | 1,870 cases`
+- Use color-coded severity badges: `LOW` (green), `MEDIUM` (amber), `HIGH` (red)
+- Use horizontal rule separators between sections, not card borders for every section
+- Include brief interpretive text: "An AUC of 0.98 means the model correctly ranks a random HIGH-risk incident above a random LOW-risk incident 98% of the time."
+- Every chart must be paired with a one-sentence takeaway that answers "so what?"
+
+### What-If Visualizations
+On the Live Risk Assessor, the prediction result should include:
+- **Risk waterfall**: Show how the prediction moves from baseline (e.g., 35%) to final (e.g., 72%) driven by each input feature
+- **Feature contribution bars**: "Province: Ontario (+8%)", "Cargo: Dangerous Goods (+15%)", "Season: Winter (+4%)"
+- **Confidence indicator**: "Model confidence: HIGH (this input is well within the training data distribution)" vs "Model confidence: LOW (some input values are unusual — interpret with caution)"
+
+---
+
 ## Technical Requirements
 
 ### Performance
@@ -140,6 +179,9 @@ Replace Streamlit's default sidebar with a professional **left-nav panel** with:
 - No markdown-only pages — every page should have visual elements
 - No model metrics without context — always explain what they mean
 - No wall-of-text explanations — use cards, badges, and bullet points
+- **NO random emojis** — Do not use emojis as bullet points, section headers, or decoration. This is an enterprise risk intelligence tool.
+- **No generic Streamlit widgets** — No default `st.metric`, `st.expander`, `st.selectbox` without custom theming. Every component should be styled to match the dark theme.
+- **No "toy project" aesthetics** — This should not look like a Kaggle notebook or class project. It should look like software a Fortune 500 company licenses.
 
 ---
 
@@ -153,7 +195,7 @@ The existing backend code is solid. Do NOT change:
 - `models/final_model.joblib` — Trained model
 - `data/processed/incidents_featured.parquet` — Processed data
 
-**Only modify:** `website/app.py`, `website/pages/*.py`, `website/assets/`
+**Only modify:** `website/app.py`, `website/pages/*.py`, `website/assets/`, `.streamlit/config.toml`
 
 The model expects 25 feature columns:
 ```
@@ -169,6 +211,21 @@ The model expects 25 feature columns:
 
 ---
 
+## Deployment Instructions
+
+When you are done building, all changes must be committed and pushed to the repository:
+
+1. **Commit all changes** to https://github.com/pranay-ratan/rail-delay-prediction
+2. The repo already has a `Procfile` and `requirements.txt` — ensure `requirements.txt` includes any new packages you add
+3. **Ensure the app deploys to Streamlit Cloud** by pushing to the `main` branch — the entire project should be deployable with a single push
+4. Do NOT leave any files uncommitted. All code, assets, and configs must be in the repo
+5. Follow the existing file convention: `website/pages/01_overview.py`, `website/pages/02_eda.py`, etc.
+6. Create or update `.streamlit/config.toml` to enable the dark theme and custom styling by default, so deployment works immediately without manual configuration
+7. After committing, verify that `streamlit run website/app.py` works from a clean checkout
+8. The goal: push to `main` → Streamlit Cloud auto-deploys → URL works in 30 seconds with zero manual configuration
+
+---
+
 ## Success Criteria
 
 A successful result is a dashboard that:
@@ -177,3 +234,7 @@ A successful result is a dashboard that:
 3. Makes predictions feel instant
 4. Tells a story: problem → data → insight → action
 5. Would impress someone in a job interview
+6. Has zero emoji abuse — reads as professional enterprise software
+7. Every chart has a clear insight, not just data dumped on screen
+8. Custom dark theme applied consistently — no default widget styling leaks through
+9. All changes committed to GitHub — the repo is the single source of truth
