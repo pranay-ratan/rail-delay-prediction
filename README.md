@@ -9,7 +9,7 @@
 [![Plotly](https://img.shields.io/badge/Plotly-5.21-blue)](https://plotly.com/)
 [![pandas](https://img.shields.io/badge/pandas-2.2-150458?logo=pandas)](https://pandas.pydata.org/)
 
-**Live Demo:** [rail-incident-prediction.streamlit.app](https://rail-incident-prediction.streamlit.app)  
+**Live Demo:** [railriskcanadaxyz]([https://rail-incident-prediction.streamlit.app](https://www.railwayriskcanada.xyz/))  
 **Author:** Pranay Ratan — BSc Data Science, Simon Fraser University  
 **Contact:** [LinkedIn](https://linkedin.com/in/pranayratan) · [GitHub](https://github.com/pranayratan)
 
