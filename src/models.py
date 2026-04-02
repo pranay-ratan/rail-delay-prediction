@@ -496,7 +496,7 @@ def explain_model_plain_english(
         f"disproportionately elevated probability scores. Together, these drivers suggest "
         f"that proactive resource deployment to high-traffic provinces during winter months "
         f"— combined with stricter dangerous goods protocols — could measurably reduce "
-        f"incident severity across the CPKC network."
+        f"incident severity across the rail network."
     )
     return explanation
 
