@@ -1,0 +1,11 @@
+# Streamlit Community Cloud dependencies (it reads the requirements file next
+# to the entrypoint, website/app.py). Same model stack as backend/requirements.txt.
+streamlit==1.67.0
+plotly==7.1.0
+pandas==3.1.1
+numpy==2.5.5
+scikit-learn==1.9.1
+scipy==1.18.1
+joblib==1.6.0
+xgboost-cpu==3.4.1
+pydantic==2.14.4
