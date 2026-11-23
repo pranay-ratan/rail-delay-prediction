@@ -15,7 +15,7 @@ const NAV_ITEMS = [
   { id: 'predictor', label: 'Live Risk Assessor', icon: Shield },
 ];
 
-function Sidebar({ active, onNavigate, sidebarOpen, onClose }) {
+function Sidebar({ active, onNavigate, sidebarOpen, onClose, modelName }) {
   return (
     <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`} data-testid="sidebar">
       <div className="sidebar-logo">
@@ -50,7 +50,7 @@ function Sidebar({ active, onNavigate, sidebarOpen, onClose }) {
       <div className="sidebar-footer">
         <div className="model-status" data-testid="model-status">
           <div className="status-dot" />
-          <span>Model: Random Forest v1.0</span>
+          <span>Model: {modelName || 'loading…'}</span>
         </div>
         <div className="sidebar-author">
           Pranay Ratan<br />
@@ -99,12 +99,14 @@ function App() {
         onNavigate={setPage}
         sidebarOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        modelName={stats?.best_model}
       />
       <main className="main-content" data-testid="main-content">
         {renderPage()}
         <div className="disclaimer">
-          Built with Transport Canada public data. For demonstration purposes only.
-          All predictions are illustrative and not intended for operational safety decisions.
+          Data: Transportation Safety Board of Canada, Rail Occurrence Database (open.canada.ca),
+          accidents {stats?.year_range || '2001-2025'}; weather from Open-Meteo. A portfolio project, not
+          intended for operational safety decisions.
         </div>
       </main>
     </div>

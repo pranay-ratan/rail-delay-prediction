@@ -6,10 +6,11 @@ export default function Plot({ data, layout, config, style }) {
   useEffect(() => {
     if (!containerRef.current || !window.Plotly) return;
     
-    const mergedLayout = {
-      ...layout,
-      autosize: true,
-    };
+    // Plotly writes computed state (axis type, range, ...) back into the
+    // objects it is given. Pass deep copies so shared theme objects such as
+    // DARK_LAYOUT.xaxis are never mutated and can't leak between charts.
+    const mergedLayout = structuredClone({ ...layout, autosize: true });
+    const mergedData = structuredClone(data);
 
     const mergedConfig = {
       responsive: true,
@@ -17,7 +18,7 @@ export default function Plot({ data, layout, config, style }) {
       ...config,
     };
 
-    window.Plotly.newPlot(containerRef.current, data, mergedLayout, mergedConfig);
+    window.Plotly.newPlot(containerRef.current, mergedData, mergedLayout, mergedConfig);
 
     return () => {
       if (containerRef.current && window.Plotly) {
