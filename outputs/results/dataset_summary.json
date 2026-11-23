@@ -1,0 +1,38 @@
+{
+  "data_source": "TSB Rail Occurrence Database (RODS), accidents only",
+  "weather_source": [
+    "open-meteo-era5"
+  ],
+  "n_rows": 28233,
+  "year_range": [
+    2001,
+    2025
+  ],
+  "n_features": 37,
+  "positive_rate": 0.11139446746714837,
+  "target": "fatality or serious injury (>=1)",
+  "cv": "StratifiedKFold(n_splits=10, shuffle=True, random_state=42)",
+  "time_holdout": "train 2001-2020, test 2021-2025",
+  "tuning": {
+    "best_params": {
+      "clf__subsample": 0.85,
+      "clf__reg_lambda": 5.0,
+      "clf__n_estimators": 200,
+      "clf__min_child_weight": 5,
+      "clf__max_depth": 6,
+      "clf__learning_rate": 0.03,
+      "clf__colsample_bytree": 0.6
+    },
+    "inner_cv_auc_train_years": 0.8925682281638204
+  },
+  "final_model": "XGBoost (Tuned)",
+  "baseline": "Majority-class baseline",
+  "versions": {
+    "python": "3.12.15",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "joblib": "1.6.0"
+  }
+}
