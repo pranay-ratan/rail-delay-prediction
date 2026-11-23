@@ -1,9 +1,14 @@
-fastapi
-uvicorn
-pandas
-numpy
-scikit-learn
-xgboost
-lightgbm
-joblib
-python-dotenv
+# Runtime dependencies for the FastAPI backend (Vercel Python function).
+# Versions match the training environment so final_model.joblib unpickles cleanly.
+fastapi==0.118.0
+uvicorn==0.37.0
+pandas==3.1.1
+numpy==2.5.5
+# The model is a scikit-learn Pipeline (median imputer -> XGBClassifier).
+scikit-learn==1.9.1
+scipy==1.18.1
+joblib==1.6.0
+# CPU-only build of XGBoost 3.4.1: same `xgboost` module as training, without
+# the ~200 MB NVIDIA libraries the default Linux wheel pulls in.
+xgboost-cpu==3.4.1
+# No pyarrow: the data ships as gzip CSV (pyarrow would add ~165 MB).
