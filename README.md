@@ -1,205 +1,164 @@
-# 🚂 Canadian Rail Incident & Delay Prediction
+# Canadian Rail Accident Severity Prediction
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://www.python.org/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4-orange?logo=scikit-learn)](https://scikit-learn.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-2.0-green)](https://xgboost.readthedocs.io/)
-[![LightGBM](https://img.shields.io/badge/LightGBM-4.3-lightgreen)](https://lightgbm.readthedocs.io/)
-[![SHAP](https://img.shields.io/badge/SHAP-0.45-purple)](https://shap.readthedocs.io/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.34-red?logo=streamlit)](https://streamlit.io/)
-[![Plotly](https://img.shields.io/badge/Plotly-5.21-blue)](https://plotly.com/)
-[![pandas](https://img.shields.io/badge/pandas-2.2-150458?logo=pandas)](https://pandas.pydata.org/)
+End-to-end ML on **real** Transportation Safety Board of Canada data: given that a rail accident happens,
+how likely is it to **kill or seriously injure** someone, using only information known *before* the accident?
 
-**Live Demo:** [railriskcanadaxyz](https://www.railwayriskcanada.xyz/)  
-**Author:** Pranay Ratan — BSc Data Science, Simon Fraser University  
-**Contact:** [LinkedIn](https://linkedin.com/in/pranayratan) · [GitHub](https://github.com/pranayratan)
+- **React dashboard + FastAPI** (Vercel): https://www.railwayriskcanada.xyz (domain must be re-pointed to the Vercel project; see Deploy)
+- **Streamlit dashboard**: _add the `*.streamlit.app` URL after deploying (steps below)_
+- **Author:** Pranay Ratan, BSc Data Science, Simon Fraser University · [GitHub](https://github.com/pranay-ratan)
+
+Python · pandas · scikit-learn · XGBoost · LightGBM · SHAP · FastAPI · React · Streamlit · Plotly
 
 ---
 
-## 🎯 Project Overview
+## Results (all numbers produced by `python -m src.train`)
 
-This end-to-end machine learning project builds an **incident severity prediction system** for Canada's rail network, using 25 years of Transport Canada Railway Occurrence Statistics enriched with Open-Meteo weather data and Statistics Canada route density proxies.
+**Data:** 28,233 TSB-reported rail accidents, 2001-2025 (25 years). **Target:** at least one fatality or serious
+injury, **11.1%** of accidents, so the classes are imbalanced. **37 pre-incident features.**
 
-Built with **CPKC (Canadian Pacific Kansas City)** in mind — North America's only transnational railroad — this system demonstrates how historical occurrence patterns, geographic risk factors, and seasonal signals can be combined to produce **proactive risk intelligence** for operations teams.
+### 10-fold stratified cross-validation
 
-### Why This Matters for CPKC
+| Model | ROC-AUC | PR-AUC | F1 (severe) | Precision | Recall | Balanced acc. | Accuracy |
+|---|---|---|---|---|---|---|---|
+| Majority-class baseline | 0.500 | 0.111 | 0.000 | 0.000 | 0.000 | 0.500 | 0.889 |
+| Logistic Regression | 0.866 | 0.436 | 0.449 | 0.301 | 0.887 | 0.814 | 0.758 |
+| Random Forest | 0.888 | 0.495 | 0.504 | 0.370 | 0.786 | 0.809 | 0.827 |
+| XGBoost | 0.888 | 0.498 | 0.505 | 0.375 | 0.776 | 0.807 | 0.831 |
+| LightGBM | 0.890 | 0.503 | 0.498 | 0.361 | 0.804 | 0.813 | 0.819 |
+| **XGBoost (tuned, final)** | **0.892** (±0.008) | 0.502 | 0.479 | 0.333 | 0.859 | 0.821 | 0.792 |
 
-Canada's rail network moves ~$400 billion in goods annually. Every unplanned incident carries:
-- Direct infrastructure repair costs ($500K–$10M+ per derailment)
-- Regulatory fines under the Transportation of Dangerous Goods Act
-- Crew safety consequences and service disruption cascades
+### Time-based holdout: train 2001-2020, test on unseen 2021-2025 (4,550 accidents)
 
-Predicting high-severity incidents **before they occur** — rather than responding after — allows corridor managers to deploy maintenance crews, adjust train speeds, and prioritize inspections with data-driven precision.
+| Model | ROC-AUC | PR-AUC (base 0.131) | F1 | Recall |
+|---|---|---|---|---|
+| **XGBoost (tuned, final)** | **0.875** | 0.472 | 0.495 | 0.850 |
+| Random Forest | 0.875 | 0.486 | 0.510 | 0.792 |
+| Logistic Regression | 0.869 | 0.476 | 0.464 | 0.914 |
+| XGBoost (default) | 0.869 | 0.455 | 0.497 | 0.654 |
+| LightGBM | 0.863 | 0.433 | 0.497 | 0.694 |
 
----
+**Read accuracy with care:** always predicting "not severe" scores 88.9% accuracy with zero recall. ROC-AUC and
+PR-AUC are the meaningful metrics here.
 
-## 📊 Dataset
-
-| Dataset | Source | Access |
-|---------|--------|--------|
-| Railway Occurrence Statistics | [Transport Canada / Open Canada](https://open.canada.ca/data/en/dataset/1dc5304e-6d54-4b15-a907-cd5e23f69c25) | CKAN API — automatic |
-| Monthly Weather by Province | [Open-Meteo ERA5 Archive](https://open-meteo.com/) | Free REST API — no key |
-| Route Density Proxy | Statistics Canada Track Km + 2021 Census | Embedded constants |
-
-All data is loaded **programmatically** — zero manual downloads required.
-
----
-
-## 🏗️ Project Structure
-
-```text
-rail-delay-prediction/
-│
-├── data/
-│   ├── raw/                        ← Transport Canada CSV + weather parquet cache
-│   └── processed/                  ← Feature-engineered parquet (15+ features)
-│
-├── notebooks/
-│   └── rail_incident_prediction.ipynb   ← End-to-end walkthrough (Steps 1–7)
-│
-├── src/
-│   ├── data_loader.py              ← CKAN API + Open-Meteo + quality report
-│   ├── preprocessing.py            ← Cleaning, feature engineering (15+ features)
-│   ├── models.py                   ← 4 classifiers, 10-fold CV, SHAP, tuning
-│   └── visualizations.py           ← Matplotlib + Plotly charts (10+ figures)
-│
-├── models/
-│   └── final_model.joblib          ← Serialized best estimator + feature names
-│
-├── outputs/
-│   ├── figures/                    ← All publication-quality saved plots
-│   └── results/
-│       └── model_metrics.csv       ← Full CV metrics for all models
-│
-├── website/                        ← Streamlit multi-page dashboard
-│   ├── app.py                      ← Entry point + sidebar
-│   ├── pages/
-│   │   ├── 01_overview.py          ← Hero, stats, key findings
-│   │   ├── 02_eda.py               ← Interactive EDA with filters
-│   │   ├── 03_model_results.py     ← Metrics, ROC, SHAP, confusion matrix
-│   │   └── 04_live_predictor.py    ← Real-time risk scoring form
-│   └── assets/
-│       └── cpkc_theme.css          ← CPKC red (#C8102E) theme
-│
-├── README.md
-├── requirements.txt                ← Version-pinned dependencies
-├── Procfile                        ← Streamlit Cloud deployment
-├── runtime.txt                     ← Python 3.11.9
-└── .gitignore
-```
+**Top SHAP drivers:** main-line track, train speed, train proceeding (vs switching), switching, tonnage,
+temperature. Fatal and serious-injury accidents cluster on main-line running at speed (crossings, trespassers);
+the far more common yard and switching accidents are rarely severe.
 
 ---
 
-## ⚙️ Installation & Usage
+## What was fixed (and why the old numbers were wrong)
 
-### 1. Clone & Install
+An audit of the previous version of this repo found:
+
+1. **The data was synthetic.** The Transport Canada CKAN package ID in the loader did not exist, so the loader
+   silently fell back to a random generator (`_generate_synthetic_dataset`, seed 42). All 8,500 "incidents"
+   matched that generator exactly. The Open-Meteo request was also invalid (`monthly=` is not supported), so the
+   weather was synthetic too. The "StatCan route density" was a hard-coded table.
+2. **Target leakage.** The target was a rule over `incident_type`, `fatalities` and `injuries`, and all three were
+   model inputs (plus `multi_fatality`, `cargo_x_type_risk`). A single decision tree on those three columns scored
+   100%, which is why RF/XGBoost/LightGBM showed 1.0 on every metric.
+3. **The published 90.1% / 0.956 never came from a run**: they were typed into the README; the notebook had no
+   outputs and the only results file showed 1.0. On the synthetic data with leakage removed, every model scored
+   ROC-AUC ≈ 0.50 (chance), as expected.
+
+The rebuilt pipeline:
+
+- **Real data:** TSB Rail Occurrence Database (RODS), accidents only, joined to each accident's lead train;
+  daily Open-Meteo ERA5 weather for the accident date. No synthetic fallback: missing files raise an error.
+- **Pre-incident features only** (`src/features.py`, an explicit allow-list): year, month, hour, weekend, province,
+  mile post, track type (main/yard), train activity (proceeding/switching/standing), train type, speed, cars,
+  locomotives, tonnage, daily weather, and provincial accident history computed **only from strictly earlier
+  dates**. Accident type, injuries, damage, evacuation, etc. are outcomes and are excluded.
+- **Missingness leak handled:** TSB fills in more fields for serious accidents. Blank categories are merged with
+  "other", numeric gaps are median-imputed inside each CV fold, and the leak is measured: a model that sees only
+  *which fields are blank* reaches ROC-AUC 0.658, while the tuned model scores 0.886 on fully complete records only
+  (vs 0.892 overall), so it is not relying on blanks. Dropping train speed costs only ~0.016 AUC.
+- **Evaluation:** 10-fold stratified CV for all models, XGBoost tuned with `RandomizedSearchCV` (30 candidates ×
+  10 folds) on the 2001-2020 years only, plus the untouched 2021-2025 holdout. Real ROC curves come from
+  out-of-fold predictions; the API's probabilities are calibrated against observed out-of-fold severe rates.
+- **Tests** (`tests/`, 41 tests): feature/target rules, past-only history, API endpoints, training/serving parity
+  (the API's feature code is a byte-identical copy of training's), and every Streamlit page.
+
+---
+
+## Run locally
 
 ```bash
-git clone https://github.com/pranayratan/rail-delay-prediction.git
-cd rail-delay-prediction
-python -m venv venv && source venv/bin/activate   # macOS/Linux
+python3.12 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Run the Jupyter Notebook (Full Pipeline)
+**1. Get the data (once).** The TSB server rejects scripted downloads, so download these three CSVs in a browser from
+[Rail occurrence data from January 1983 to present](https://open.canada.ca/data/en/dataset/4f8d9b0d-c4af-4be2-b751-3f5a403993ff)
+and save them to `data/raw/tsb/`:
+`RODSdb_MDOTW_VW_OCCURRENCE_PUBLIC.csv`, `RODSdb_MDOTW_VW_TRAIN_PUBLIC.csv`, `RODSdb-dd.csv` (dictionary).
+
+**2. Train, evaluate, copy artifacts into the backend, test:**
 
 ```bash
-cd notebooks
-jupyter notebook rail_incident_prediction.ipynb
+python -m src.train              # ~4 min; writes outputs/, models/, data/processed/
+python scripts/sync_backend.py   # copies model + data + results into backend/
+pytest
 ```
 
-Run all cells top-to-bottom. The notebook will:
-- Fetch Transport Canada data via API (cached after first run)
-- Fetch Open-Meteo weather data
-- Engineer 15+ features
-- Train 4 ML models with 10-fold CV
-- Run hyperparameter tuning
-- Compute SHAP values
-- Save `models/final_model.joblib` and all figures
-
-### 3. Launch Streamlit Dashboard
+**3. Run the apps:**
 
 ```bash
-streamlit run website/app.py
+cd backend && uvicorn server:app --port 8000          # API: http://localhost:8000/api/health
+cd frontend && npm install && REACT_APP_BACKEND_URL=http://localhost:8000 npm start
+streamlit run website/app.py                           # from the repo root
 ```
 
-Open [http://localhost:8501](http://localhost:8501)
+---
+
+## Deploy
+
+### Vercel (React + FastAPI, one project)
+
+`vercel.json` defines two services: `frontend/` (Create React App) and `backend/` (FastAPI, `server:app`), with
+`/api/*` routed to the API (the path is passed through unchanged) and everything else to React.
+
+1. Import the GitHub repo in Vercel. Root directory: repo root (`./`). Vercel reads `vercel.json`.
+2. Environment variables: none required. Leave `REACT_APP_BACKEND_URL` unset (same origin).
+   `CI=false` is not needed: the frontend builds with zero ESLint warnings under `CI=true`.
+3. Python 3.12 is pinned in `backend/.python-version`; `backend/requirements.txt` uses `xgboost-cpu`
+   (the default Linux `xgboost` wheel pulls in ~200 MB of NVIDIA libraries) and ships the data as gzip CSV
+   instead of parquet, keeping the function bundle ≈ 280 MB (limit 500 MB).
+4. After deploying, open `/api/health`: it should show `"model_loaded": true, "data_loaded": true`.
+5. Add the custom domain `railwayriskcanada.xyz` in Vercel and update the DNS records at the registrar
+   to the values Vercel shows.
+
+### Streamlit Community Cloud
+
+1. https://share.streamlit.io → **Create app** → *Deploy a public app from GitHub*.
+2. Repository `pranay-ratan/rail-delay-prediction`, branch `main` (after merging), main file `website/app.py`.
+3. **Advanced settings** → Python **3.12**. No secrets needed. Dependencies come from `website/requirements.txt`.
+4. Deploy, then paste the `*.streamlit.app` URL at the top of this README.
 
 ---
 
-## 🚀 Deploy to Streamlit Cloud (One-Click)
+## Project structure
 
-1. Push repo to GitHub
-2. Visit [share.streamlit.io](https://share.streamlit.io)
-3. Connect repo → set **Main file path** to `website/app.py`
-4. Click **Deploy** — Streamlit Cloud reads `requirements.txt` and `runtime.txt` automatically
+```text
+src/
+  data_loader.py     TSB CSV loader + Open-Meteo daily weather (cached, rate-limit aware)
+  features.py        the pre-incident feature definition (shared with the API)
+  preprocessing.py   target, past-only history, weather join
+  models.py          baseline + 4 classifiers, 10-fold CV, time holdout, XGBoost tuning, SHAP
+  train.py           end-to-end run that writes every artifact
+scripts/sync_backend.py   copies model + data + results into backend/
+backend/             FastAPI app (server.py, predictor.py, resources.py, insights.py, data/, models/)
+frontend/            React dashboard (4 pages)
+website/             Streamlit dashboard (reuses backend/ modules)
+outputs/             metrics CSVs, ROC/calibration JSON, SHAP plots
+tests/               pytest suite
+```
 
-The `Procfile` is also included for Heroku/Render compatibility.
+## Limitations
 
----
-
-## 🔬 Key Findings
-
-- **~23% decline** in total rail occurrences from peak (2005) to 2024, validating the impact of TC safety regulations
-- **Winter months carry 1.4× higher severity probability** than summer — driven by track contraction, ice, and reduced visibility
-- **Ontario + Quebec account for ~40% of incidents** (network density), but Saskatchewan/Alberta lead in derailment rate
-- **XGBoost achieved ROC-AUC > 0.95** on 10-fold stratified CV — substantially outperforming the Logistic Regression baseline (AUC ~0.80)
-- **Rolling 12-month incident count, province risk score, and cargo type** are the top 3 SHAP predictors — targeting the top-10% highest-scoring corridor-season combinations would cover an estimated **62% of all high-severity incidents**
-
----
-
-## 🤖 Models & Performance
-
-| Model | Accuracy | F1 | ROC-AUC |
-|-------|----------|----|---------|
-| Logistic Regression | 0.741 | 0.740 | 0.802 |
-| Random Forest | 0.879 | 0.877 | 0.931 |
-| XGBoost | 0.893 | 0.892 | 0.949 |
-| LightGBM | 0.888 | 0.886 | 0.943 |
-| **XGBoost (Tuned)** | **0.901** | **0.900** | **0.956** |
-
-All metrics from 10-fold stratified cross-validation. Best model saved to `models/final_model.joblib`.
-
----
-
-## 🛠️ Feature Engineering (15+ Features)
-
-| Feature | Description |
-|---------|-------------|
-| `season` | Winter/Spring/Summer/Fall from month |
-| `decade` | 2000s/2010s/2020s grouping |
-| `is_weekend` | Binary weekend flag |
-| `years_since_2000` | Continuous time trend feature |
-| `province_risk_score` | Province encoded by historical incident frequency |
-| `route_density_score` | Track-km per 100k population (Statistics Canada) |
-| `incident_type_encoded` | Label encoded incident type |
-| `cargo_risk` | Ordinal risk by cargo (1=low, 3=high) |
-| `multi_fatality` | Binary: 2+ fatalities |
-| `incident_severity` | **Target** — binary HIGH/LOW |
-| `rolling_12m_incidents` | 12-month rolling count per province |
-| `cumulative_incidents_province` | Province-level cumulative count |
-| `season_x_province_risk` | Interaction: season × province risk |
-| `cargo_x_type_risk` | Interaction: cargo risk × incident type |
-| `temp_x_cargo_risk` | Interaction: temperature × cargo risk |
-| `density_x_rolling` | Interaction: route density × rolling incidents |
-
----
-
-## 📁 Data Quality Report
-
-The `data_loader.print_data_quality_report()` function produces a full report on:
-- Shape, dtypes, memory usage
-- Null counts and percentages per column
-- Duplicate row count
-- Unique value counts per column
-
-Missing value fill strategies are fully documented in `src/preprocessing.py`.
-
----
-
-## 📄 License
-
-This project uses Transport Canada open data under the [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada).
-
----
-
-*Built by Pranay Ratan · SFU Data Science · April 2026*
+- The model predicts severity **conditional on an accident having happened**; it does not predict whether an
+  accident will happen (TSB data contains only occurrences).
+- "Speed just before the accident" is recorded after the fact by TSB; it is a pre-impact condition, but in real use
+  it would be a planned or authorized speed.
+- Weather is province-level (one point per province, at the median accident location), not per accident site.
+- Not intended for operational safety decisions.
