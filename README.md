@@ -5,7 +5,7 @@ how likely is it to **kill or seriously injure** someone, using only information
 
 - **React dashboard + FastAPI** (Vercel): https://www.railwayriskcanada.xyz (domain must be re-pointed to the Vercel project; see Deploy)
 - **Streamlit dashboard**: _add the `*.streamlit.app` URL after deploying (steps below)_
-- **Author:** Pranay Ratan, BSc Data Science, Simon Fraser University · [GitHub](https://github.com/pranay-ratan)
+- **Author:** Pranay Ratan, BSc Data Science, Simon Fraser University · [LinkedIn](https://www.linkedin.com/in/pranay-ratan/) · [GitHub](https://github.com/pranay-ratan)
 
 Python · pandas · scikit-learn · XGBoost · LightGBM · SHAP · FastAPI · React · Streamlit · Plotly
 
@@ -162,3 +162,10 @@ tests/               pytest suite
   it would be a planned or authorized speed.
 - Weather is province-level (one point per province, at the median accident location), not per accident site.
 - Not intended for operational safety decisions.
+
+## Licence and data attribution
+
+Code by Pranay Ratan. Contains information licensed under the
+[Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada)
+(Transportation Safety Board of Canada, Rail Occurrence Database). Weather data by
+[Open-Meteo](https://open-meteo.com/) (CC BY 4.0).
