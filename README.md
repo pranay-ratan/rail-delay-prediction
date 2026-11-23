@@ -4,9 +4,6 @@ An end-to-end machine-learning pipeline and dashboard for predicting whether a C
 
 **Live demo:** not currently online · **Code:** this repo
 
-![Dashboard screenshot](docs/screenshot-dashboard.png)
-<!-- TODO: add docs/screenshot-dashboard.png (Streamlit overview page) and docs/screenshot-predictor.png (live risk predictor) -->
-
 **Stack:** Python · pandas · scikit-learn · XGBoost · LightGBM · SHAP · Streamlit · Plotly · FastAPI + React (alternate front end)
 
 ## Status: read this first
